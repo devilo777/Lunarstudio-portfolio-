@@ -1,1 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar Studio | Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Link your existing style.css to keep fonts and global colors identical -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Extra custom styles tailored for the dedicated gallery page view */
+        .gallery-wrapper {
+            padding: 140px 20px 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 85vh;
+        }
+
+        .gallery-header {
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .back-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            transform: translateX(-3px);
+        }
+
+        .gallery-title {
+            font-size: 2.5rem;
+            font-family: var(--font-heading);
+        }
+
+        /* STRICT 16:9 CARD SPECIFIC OVERRIDES - NO CROPPING ALLOWED */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+        }
+
+        .gallery-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.15);
+        }
+
+        .gallery-thumb-box {
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Perfect bounding layout framework */
+            overflow: hidden;
+            background: #000;
+            position: relative;
+        }
+
+        .gallery-thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* PERFECT FILL WITHOUT CROPPING */
+            display: block;
+            background-color: #070b14; /* Matches site bg seamlessly */
+        }
+
+        .gallery-info {
+            padding: 20px;
+        }
+
+        .gallery-info h3 {
+            font-size: 1.15rem;
+            color: var(--text-main);
+            font-family: var(--font-heading);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient glow shapes sync -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <!-- Simplified Gallery Navbar -->
+    <nav class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="logo-container">
+                <img id="site-logo" src="https://placehold.co/100x100/8b5cf6/ffffff?text=LUNAR" alt="Lunar Studio Logo" class="nav-logo">
+                <span class="agency-name">Lunar Studio</span>
+            </a>
+            <a href="index.html" class="back-btn">← Back to Home</a>
+        </div>
+    </nav>
+
+    <!-- Main Dynamic Gallery Grid Section Container -->
+    <main class="gallery-wrapper">
+        <div class="gallery-header">
+            <div>
+                <h1 class="gallery-title" id="gallery-heading">Our Work Portfolio</h1>
+                <p style="color: var(--text-muted); margin-top: 6px;" id="gallery-subheading">Viewing assets inside our specialized visual catalogs.</p>
+            </div>
+        </div>
+
+        <div class="gallery-grid" id="gallery-display-grid">
+            <!-- Items loaded automatically from LocalStorage via JavaScript injection -->
+        </div>
+    </main>
+
+    <!-- Fullscreen Lightbox Modal View Module -->
+    <div class="modal" id="portfolio-modal" aria-hidden="true">
+        <button class="modal-close" id="modal-close" aria-label="Close Preview">&times;</button>
+        <div class="modal-content">
+            <img src="" id="modal-img" alt="Enlarged Portfolio View">
+            <div class="modal-meta">
+                <span class="badge" id="modal-badge">Category</span>
+                <h3 id="modal-title">Project Title</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Automation Logic Sheet Section -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Fetch parameters injected inside active URL window scope
+            const urlParams = new URLSearchParams(window.location.search);
+            const requestedCategory = urlParams.get('category');
+            
+            // 2. Safely parse central active engine memory database system 
+            const cachedData = localStorage.getItem('lunar_studio_db');
+            if (!cachedData) return;
+            const db = JSON.parse(cachedData);
+
+            // Update UI brand marks asset mapping 
+            if (db.logo) {
+                document.getElementById('site-logo').src = db.logo;
+            }
+
+            const heading = document.getElementById('gallery-heading');
+            const subheading = document.getElementById('gallery-subheading');
+            const displayGrid = document.getElementById('gallery-display-grid');
+
+            // 3. Filter asset array items pool using URL parameters rules criteria 
+            let portfolioPool = db.portfolio || [];
+            
+            if (requestedCategory) {
+                heading.innerHTML = `${requestedCategory} <span class="text-gradient">Collection</span>`;
+                subheading.textContent = `Explore our complete premium track designs optimized for ${requestedCategory}.`;
+                // Filter down match parameters array subset scope
+                portfolioPool = portfolioPool.filter(item => item.category.toLowerCase() === requestedCategory.toLowerCase());
+            } else {
+                heading.innerHTML = `Complete <span class="text-gradient">Showcase</span>`;
+                subheading.textContent = "Browsing our central visual systems catalog portfolio archive production assets.";
+            }
+
+            // 4. Execute UI pipeline generation pass elements assembly loops injection
+            if (portfolioPool.length === 0) {
+                displayGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 40px 0;">No thumbnails found inside this category framework collection catalog.</p>`;
+                return;
+            }
+
+            // Reverse items map rendering pass stream process sequence flow layout 
+            [...portfolioPool].reverse().forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'gallery-card';
+                itemCard.style.cursor = 'pointer';
+                itemCard.setAttribute('data-id', item.id);
+                itemCard.innerHTML = `
+                    <div class="gallery-thumb-box">
+                        <img src="${item.image}" alt="${item.title}" loading="lazy">
+                    </div>
+                    <div class="gallery-info">
+                        <span class="badge" style="margin-bottom: 10px;">${item.category}</span>
+                        <h3>${item.title}</h3>
+                    </div>
+                `;
+                displayGrid.appendChild(itemCard);
+            });
+
+            // 5. Complete Integrated Lightbox Interaction Logic
+            const modal = document.getElementById('portfolio-modal');
+            const modalImg = document.getElementById('modal-img');
+            const modalBadge = document.getElementById('modal-badge');
+            const modalTitle = document.getElementById('modal-title');
+
+            displayGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.gallery-card');
+                if(!card) return;
+                
+                const targetId = parseInt(card.getAttribute('data-id'));
+                const matchedItem = portfolioPool.find(i => i.id === targetId);
+                
+                if(matchedItem) {
+                    modalImg.src = matchedItem.image;
+                    modalBadge.textContent = matchedItem.category;
+                    modalTitle.textContent = matchedItem.title;
+                    modal.classList.add('active');
+                    modal.setAttribute('aria-hidden', 'false');
+                }
+            });
+
+            const closeModal = () => {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+            };
+
+            document.getElementById('modal-close').addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        });
+    </script>
+</body>
+</html>
 
