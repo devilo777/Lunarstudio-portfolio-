@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar Portal | Admin Content Management Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <div id="auth-gate" class="auth-gate">
+        <div class="auth-box">
+            <h2>Lunar Staff Authentication</h2>
+            <p>Access restricted to authorized studio administrators.</p>
+            <div id="login-error" class="error-msg" style="display:none;">Invalid Credentials Provided</div>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label>Admin Username</label>
+                    <input type="text" id="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Security Access Token Code</label>
+                    <input type="password" id="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="admin-btn admin-btn-primary">Unlock Terminal</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard-workspace" class="dashboard-workspace" style="display:none;">
+        <header class="dashboard-header">
+            <div>
+                <h1>Management Terminal</h1>
+                <p>Modify, scale, and inspect system deployment modules globally.</p>
+            </div>
+            <div class="header-actions">
+                <button id="backup-btn" class="admin-btn admin-btn-secondary">Export Backup System Data (JSON)</button>
+                <button id="logout-btn" class="admin-btn admin-btn-danger">Exit Portal</button>
+            </div>
+        </header>
+
+        <main class="modules-layout">
+            <section class="admin-card">
+                <h2>Logo Configuration</h2>
+                <form id="logo-form" class="form-inline">
+                    <div class="form-group" style="flex:1;">
+                        <input type="text" id="logo-path" placeholder="Logo Path / Image URI Asset Address Link" required>
+                    </div>
+                    <button type="submit" class="admin-btn admin-btn-primary">Commit Path Changes</button>
+                </form>
+                <div class="logo-preview-box">
+                    <p style="font-size:0.85rem; color:#bdbdbd; margin-bottom:8px;">Live Render Verification Target Image Preview:</p>
+                    <img id="admin-logo-preview" src="" alt="Active Deployment Logo Asset Tracking Graphic">
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <h2>Portfolio Records Asset Catalog Grid</h2>
+                <form id="portfolio-form" class="form-grid">
+                    <div class="form-group">
+                        <label>Asset Title</label>
+                        <input type="text" id="p-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Deployment Category Badge Designation</label>
+                        <select id="p-category" required>
+                            <option value="Gaming">Gaming</option>
+                            <option value="IRL">IRL</option>
+                            <option value="Esports">Esports</option>
+                            <option value="Posters">Posters</option>
+                            <option value="Branding">Branding</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1/-1;">
+                        <label>Asset Image Path / Absolute URI Link Destination</label>
+                        <input type="text" id="p-image" required>
+                    </div>
+                    <button type="submit" class="admin-btn admin-btn-primary" style="grid-column: 1/-1;">Push New Project Into Active Catalog</button>
+                </form>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Preview</th>
+                                <th>Asset Details</th>
+                                <th>Category Tag</th>
+                                <th>Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolio-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <h2>Roster Control System Block</h2>
+                <form id="team-form" class="form-grid">
+                    <div class="form-group">
+                        <label>Public Name Alias</label>
+                        <input type="text" id="t-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Operational Domain Role Title</label>
+                        <input type="text" id="t-role" required>
+                    </div>
+                    <div class="form-group" style="grid-column: 1/-1;">
+                        <label>Avatar Media Asset Allocation Vector Link Path</label>
+                        <input type="text" id="t-image" required>
+                    </div>
+                    <button type="submit" class="admin-btn admin-btn-primary" style="grid-column: 1/-1;">Register Professional Operator Account</button>
+                </form>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Avatar</th>
+                                <th>Operator Name</th>
+                                <th>Task Role Mapping</th>
+                                <th>Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody id="team-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <h2>Reviews Performance Matrix Control Terminal Block</h2>
+                <form id="reviews-form" class="form-grid">
+                    <div class="form-group">
+                        <label>Client Visual Verification Profile Avatar Path Link</label>
+                        <input type="text" id="r-image" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Star Matrix Performance Scoring Index Ranking</label>
+                        <select id="r-rating" required>
+                            <option value="5">5 Stars Excellent Performance</option>
+                            <option value="4">4 Stars Standard Performance</option>
+                            <option value="3">3 Stars Neutral Performance</option>
+                            <option value="2">2 Stars Imperfect Execution</option>
+                            <option value="1">1 Star Execution Fault Breakdown</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1/-1;">
+                        <label>Client Assessment Text Report Logs</label>
+                        <textarea id="r-text" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="admin-btn admin-btn-primary" style="grid-column: 1/-1;">Publish Client Endorsement Vector</button>
+                </form>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Avatar</th>
+                                <th>Assessment Copy Log Summary</th>
+                                <th>Scoring Index</th>
+                                <th>Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviews-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
