@@ -25,7 +25,7 @@ function initializeEngine() {
     
     // Core Global Render Passes
     updateGlobalLogos(db.logo);
-    renderPortfolio(db.portfolio);
+    renderMainPagePortfolio(db.portfolio); // Modified to show only 1st thumbnail per category
     renderTeam(db.team);
     renderReviews(db.reviews);
     setupScrollEffects();
@@ -35,16 +35,33 @@ function initializeEngine() {
 }
 
 function updateGlobalLogos(logoUrl) {
-    document.getElementById('site-logo').src = logoUrl;
+    const siteLogo = document.getElementById('site-logo');
+    if (siteLogo) siteLogo.src = logoUrl;
     document.querySelectorAll('.logo-ref').forEach(img => img.src = logoUrl);
 }
 
-// UI Rendering Passes
-function renderPortfolio(items) {
+// UI Rendering Passes - Modified for 1 Thumbnail Per Category Rule
+function renderMainPagePortfolio(items) {
     const target = document.getElementById('portfolio-grid');
+    if (!target) return;
+    
     target.innerHTML = items.length === 0 ? '<p style="grid-column: 1/-1; text-align:center; color: #bdbdbd;">No items inside catalog yet.</p>' : '';
     
-    items.forEach(item => {
+    // Elements ko reverse kar rahe hain taaki admin panel se add kiya hua NAYA item sabse PEHLE aaye
+    const reversedItems = [...items].reverse();
+    
+    // Unique categories track karne ke liye Set
+    const renderedCategories = new Set();
+    
+    reversedItems.forEach(item => {
+        // Agar is category ka ek thumbnail pehle hi render ho chuka hai, toh baaki ko skip karo (wo view all me jayenge)
+        if (renderedCategories.has(item.category)) {
+            return; 
+        }
+        
+        // Category ko set me add karo taaki dobara duplicate na ho
+        renderedCategories.add(item.category);
+        
         const card = document.createElement('div');
         card.className = `portfolio-card`;
         card.setAttribute('data-category', item.category);
@@ -56,6 +73,10 @@ function renderPortfolio(items) {
             <div class="portfolio-info">
                 <span class="badge">${item.category}</span>
                 <h3>${item.title}</h3>
+                <!-- View All page standard redirect with category filter parameter -->
+                <a href="view-all.html?category=${encodeURIComponent(item.category)}" class="view-all-badge-link">
+                    View All <span class="arrow-glow">→</span>
+                </a>
             </div>
         `;
         target.appendChild(card);
@@ -64,6 +85,7 @@ function renderPortfolio(items) {
 
 function renderTeam(items) {
     const target = document.getElementById('team-grid');
+    if (!target) return;
     target.innerHTML = '';
     items.forEach(item => {
         const element = document.createElement('div');
@@ -81,6 +103,7 @@ function renderTeam(items) {
 
 function renderReviews(items) {
     const target = document.getElementById('reviews-grid');
+    if (!target) return;
     target.innerHTML = '';
     items.forEach(item => {
         const element = document.createElement('div');
@@ -97,21 +120,24 @@ function renderReviews(items) {
     });
 }
 
-// Filter Logic Dropdown Controller
-document.getElementById('portfolio-filter').addEventListener('change', (e) => {
-    const selection = e.target.value;
-    const cards = document.querySelectorAll('.portfolio-card');
-    
-    cards.forEach(card => {
-        if(selection === 'All' || card.getAttribute('data-category') === selection) {
-            card.style.display = 'block';
-            setTimeout(() => card.style.opacity = '1', 10);
-        } else {
-            card.style.opacity = '0';
-            setTimeout(() => card.style.display = 'none', 300);
-        }
+// Filter Logic Dropdown Controller (Main Page)
+const filterDropdown = document.getElementById('portfolio-filter');
+if (filterDropdown) {
+    filterDropdown.addEventListener('change', (e) => {
+        const selection = e.target.value;
+        const cards = document.querySelectorAll('.portfolio-card');
+        
+        cards.forEach(card => {
+            if(selection === 'All' || card.getAttribute('data-category') === selection) {
+                card.style.display = 'block';
+                setTimeout(() => card.style.opacity = '1', 10);
+            } else {
+                card.style.opacity = '0';
+                setTimeout(() => card.style.display = 'none', 300);
+            }
+        });
     });
-});
+}
 
 // Lightbox Structural Interactivity Logic
 function setupLightbox(items) {
@@ -119,8 +145,14 @@ function setupLightbox(items) {
     const modalImg = document.getElementById('modal-img');
     const modalBadge = document.getElementById('modal-badge');
     const modalTitle = document.getElementById('modal-title');
+    const grid = document.getElementById('portfolio-grid');
     
-    document.getElementById('portfolio-grid').addEventListener('click', (e) => {
+    if(!grid || !modal) return;
+    
+    grid.addEventListener('click', (e) => {
+        // Agar user 'View All' badge par click karta hai toh lightbox open mat karo
+        if (e.target.closest('.view-all-badge-link')) return;
+
         const card = e.target.closest('.portfolio-card');
         if(!card) return;
         
@@ -141,13 +173,15 @@ function setupLightbox(items) {
         modal.setAttribute('aria-hidden', 'true');
     };
 
-    document.getElementById('modal-close').addEventListener('click', closeModal);
+    const closeBtn = document.getElementById('modal-close');
+    if(closeBtn) closeBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 }
 
 // Scroll Effects
 function setupScrollEffects() {
     const nav = document.querySelector('.navbar');
+    if(!nav) return;
     window.addEventListener('scroll', () => {
         if(window.scrollY > 50) nav.classList.add('scrolled');
         else nav.classList.remove('scrolled');
@@ -158,6 +192,8 @@ function setupScrollEffects() {
 function setupMobileNav() {
     const burger = document.getElementById('hamburger');
     const links = document.getElementById('nav-links');
+    
+    if(!burger || !links) return;
     
     burger.addEventListener('click', () => {
         links.classList.toggle('active');
@@ -175,6 +211,7 @@ function setupMobileNav() {
 // Intersection Observer Optimization Engine for Count-Up Statistics
 function setupCounters() {
     const counters = document.querySelectorAll('.stat-number');
+    if(counters.length === 0) return;
     const observerOptions = { threshold: 0.5 };
 
     const observer = new IntersectionObserver((entries, observer) => {
