@@ -65,12 +65,21 @@ function refreshDashboardUIModules() {
 function buildPortfolioTableRows(items) {
     const tbody = document.getElementById('portfolio-table-body');
     tbody.innerHTML = '';
+    
+    // Render pool collection mapping loop tracking
     items.forEach(item => {
         const tr = document.createElement('tr');
+        
+        // Define clean custom UI badge tracking for covers
+        const displayTypeTag = item.isCover 
+            ? `<span class="badge" style="background:rgba(16,185,129,0.15); color:#34d399; padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:600;">★ Main Face Cover</span>` 
+            : `<span class="badge" style="background:rgba(255,255,255,0.05); color:#94a3b8; padding:4px 8px; border-radius:4px; font-size:0.75rem;">View All Asset</span>`;
+
         tr.innerHTML = `
             <td><img src="${item.image}" class="tbl-img-preview" alt="Asset Asset Preview Item Row Frame"></td>
             <td><span class="bold-title">${item.title}</span><span class="sub-meta">${item.image.substring(0, 45)}...</span></td>
             <td><span class="badge" style="background:rgba(139,92,246,0.15); color:#a78bfa; padding:4px 8px; border-radius:4px; font-size:0.75rem;">${item.category}</span></td>
+            <td>${displayTypeTag}</td>
             <td><button class="admin-btn admin-btn-danger" onclick="deleteRecordNode('portfolio', ${item.id})">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -119,10 +128,32 @@ function appendPortfolioItem(e) {
     const title = document.getElementById('p-title').value;
     const category = document.getElementById('p-category').value;
     const image = document.getElementById('p-image').value;
+    const isCover = document.getElementById('p-is-cover').checked;
     
     mutateDatabase(db => {
-        db.portfolio.push({ id: Date.now(), title, category, image });
+        // Safe check initialization array validation routing
+        if(!db.portfolio) db.portfolio = [];
+
+        // CRITICAL SYNC LOGIC: Agar naya thumbnail as a Cover set ho raha hai,
+        // toh is specific category ke baaki saare purane thumbnails ko false (uncheck) kardo
+        if (isCover) {
+            db.portfolio.forEach(item => {
+                if(item.category === category) {
+                    item.isCover = false;
+                }
+            });
+        }
+
+        // Push clean complete model mapping array item object structure
+        db.portfolio.push({ 
+            id: Date.now(), 
+            title, 
+            category, 
+            image, 
+            isCover: isCover 
+        });
     });
+    
     document.getElementById('portfolio-form').reset();
 }
 
@@ -188,4 +219,4 @@ function runSystemBackupRoutine() {
 function executionSecureExitLog() {
     sessionStorage.removeItem('lunar_admin_auth');
     window.location.reload();
-}
+        }
