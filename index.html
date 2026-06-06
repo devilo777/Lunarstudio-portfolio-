@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar Studio | Premium Creative Agency</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo-container">
+                <img id="site-logo" src="https://placehold.co/100x100/8b5cf6/ffffff?text=LUNAR" alt="Lunar Studio Logo" class="nav-logo">
+                <span class="agency-name">Lunar Studio</span>
+            </a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#team">Team</a></li>
+                <li><a href="#reviews">Reviews</a></li>
+                <li><a href="#contact" class="btn btn-primary mobile-cta">Hire Us</a></li>
+            </ul>
+            <a href="#contact" class="btn btn-primary desktop-cta">Hire Us</a>
+            <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-headline">Designs That<br><span class="text-gradient">Get Clicks.</span></h1>
+            <p class="hero-subheadline">Professional thumbnails, esports graphics, social media visuals and branding.</p>
+            <div class="hero-btns">
+                <a href="#portfolio" class="btn btn-secondary">View Portfolio</a>
+                <a href="#contact" class="btn btn-primary">Hire Us</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="section-header">
+            <h2>Our Services</h2>
+            <p>High-end visual solutions tailored for global creators and brands.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">📺</div>
+                <h3>YouTube Thumbnails</h3>
+                <p>High-CTR designs optimized to maximize your click-through rates systematically.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">📸</div>
+                <h3>IRL Thumbnails</h3>
+                <p>Polished, authentic vlogging and lifestyle framing that captures human curiosity.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🎮</div>
+                <h3>Esports Graphics</h3>
+                <p>Aggressive, dynamic tournament visuals, streaming overlays, and team assets.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🖼️</div>
+                <h3>Posters</h3>
+                <p>Premium, high-fidelity compositions designed for print digital distribution campaigns.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">📱</div>
+                <h3>Social Media Posts</h3>
+                <p>Cohesive visual feeds configured to maximize audience retention across platforms.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">💎</div>
+                <h3>Branding</h3>
+                <p>Modern logos, typography structures, and complete visual identity playbooks.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio" class="portfolio">
+        <div class="section-header">
+            <h2>Our Work</h2>
+            <p>Explore our master portfolio spanning multiple digital landscapes.</p>
+            <div class="filter-container">
+                <select id="portfolio-filter" class="filter-dropdown">
+                    <option value="All">All Categories</option>
+                    <option value="Gaming">Gaming</option>
+                    <option value="IRL">IRL</option>
+                    <option value="Esports">Esports</option>
+                    <option value="Posters">Posters</option>
+                    <option value="Branding">Branding</option>
+                </select>
+            </div>
+        </div>
+        <div class="portfolio-grid" id="portfolio-grid">
+            </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3 class="stat-number" data-target="1200">0</h3>
+                <p>Projects Completed</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number" data-target="450">0</h3>
+                <p>Happy Clients</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number" data-target="12">0</h3>
+                <p>Team Members</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number" data-target="5">0</h3>
+                <p>Years Experience</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="team">
+        <div class="section-header">
+            <h2>Meet The Team</h2>
+            <p>The specialized minds forging high-performing production visuals.</p>
+        </div>
+        <div class="team-grid" id="team-grid">
+            </div>
+    </section>
+
+    <section id="reviews" class="reviews">
+        <div class="section-header">
+            <h2>Client Reviews</h2>
+            <p>Trusted by industry leaders and elite content platforms worldwide.</p>
+        </div>
+        <div class="reviews-grid" id="reviews-grid">
+            </div>
+    </section>
+
+      <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="contact-card">
+            <h2>Ready To Work Together?</h2>
+            <p>Let's build visuals that redefine your brand presence instantly.</p>
+            <div class="contact-buttons">
+                <!-- Discord Server Invite Link -->
+                <a href="https://discord.gg/dJpyZ68eRt" target="_blank" rel="noopener noreferrer" class="btn-social discord">Discord</a>
+                
+                <!-- Instagram Profile Link -->
+                <a href="https://www.instagram.com/lunarstudiooo?igsh=M3kwbTF4eXU2NmFo" target="_blank" rel="noopener noreferrer" class="btn-social instagram">Instagram</a>
+                
+                <!-- Direct Email Action Link -->
+                <a href="mailto:officailluanarstudio@gmail.com" class="btn-social email">Email Us</a>
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <img src="https://placehold.co/100x100/8b5cf6/ffffff?text=LUNAR" alt="Lunar Studio Logo" class="footer-logo logo-ref">
+                <span class="agency-name">Lunar Studio</span>
+            </div>
+            <p class="copyright">&copy; 2026 Lunar Studio. All rights reserved. | <a href="adminpanel/index.html" class="admin-link">Staff Portal</a></p>
+        </div>
+    </footer>
+
+    <div class="modal" id="portfolio-modal" aria-hidden="true">
+        <button class="modal-close" id="modal-close" aria-label="Close Preview">&times;</button>
+        <div class="modal-content">
+            <img src="" id="modal-img" alt="Enlarged Portfolio View">
+            <div class="modal-meta">
+                <span class="badge" id="modal-badge">Category</span>
+                <h3 id="modal-title">Project Title</h3>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
