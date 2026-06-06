@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/adminpanel/admin.css">
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
@@ -78,6 +78,15 @@
                         <label>Asset Image Path / Absolute URI Link Destination</label>
                         <input type="text" id="p-image" required>
                     </div>
+                    
+                    <div class="form-group-checkbox" style="grid-column: 1/-1;">
+                        <label class="switch-container">
+                            <input type="checkbox" id="p-is-cover">
+                            <span class="custom-slider"></span>
+                        </label>
+                        <span class="checkbox-label-text">Set as Category Main Thumbnail (Main Page Card)</span>
+                    </div>
+                    
                     <button type="submit" class="admin-btn admin-btn-primary" style="grid-column: 1/-1;">Push New Project Into Active Catalog</button>
                 </form>
                 <div class="table-container">
@@ -87,11 +96,12 @@
                                 <th>Preview</th>
                                 <th>Asset Details</th>
                                 <th>Category Tag</th>
+                                <th>Display Type</th>
                                 <th>Operations</th>
                             </tr>
                         </thead>
                         <tbody id="portfolio-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -124,7 +134,7 @@
                             </tr>
                         </thead>
                         <tbody id="team-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -163,13 +173,13 @@
                             </tr>
                         </thead>
                         <tbody id="reviews-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </section>
         </main>
     </div>
 
-    <script src="/adminpanel/admin.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>
