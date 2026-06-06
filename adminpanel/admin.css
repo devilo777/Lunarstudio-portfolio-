@@ -62,6 +62,59 @@ input[type="text"], input[type="password"], select, textarea {
 }
 input:focus, select:focus, textarea:focus { border-color: var(--accent-glow); }
 
+/* MODERN CUSTOM TOGGLE SWITCH UI STRUCTURE MODULES */
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 25px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px dashed var(--border-node);
+}
+
+.switch-container {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+}
+
+.switch-container input { opacity: 0; width: 0; height: 0; }
+
+.custom-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #1e293b;
+    transition: .3s;
+    border-radius: 34px;
+    border: 1px solid var(--border-node);
+}
+
+.custom-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .custom-slider { background-color: var(--accent-glow); }
+input:checked + .custom-slider:before { transform: translateX(20px); }
+
+.checkbox-label-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--txt-prime);
+    user-select: none;
+}
+
 /* Interface Command Buttons Modules Control Blocks */
 .admin-btn {
     padding: 12px 24px;
