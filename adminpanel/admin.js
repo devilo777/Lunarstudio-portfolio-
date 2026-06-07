@@ -40,6 +40,7 @@ function launchDashboardWorkspace() {
     
     // Connect Form Action Event Submit Targets
     document.getElementById('logo-form').addEventListener('submit', commitLogoUpdate);
+    document.getElementById('category-form').addEventListener('submit', appendCategoryNode); // Category form link
     document.getElementById('portfolio-form').addEventListener('submit', appendPortfolioItem);
     document.getElementById('team-form').addEventListener('submit', appendTeamMember);
     document.getElementById('reviews-form').addEventListener('submit', appendReviewCard);
@@ -52,31 +53,64 @@ function refreshDashboardUIModules() {
     const db = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!db) return; // Fail-Safe Guard Route
     
+    // Base Check to ensure default categories schema exist inside storage framework
+    if (!db.categories) {
+        db.categories = ["Gaming", "IRL", "Esports", "Posters", "Branding"];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    }
+    
     // Refresh Dynamic Modules Data Arrays Displays
     document.getElementById('logo-path').value = db.logo;
     document.getElementById('admin-logo-preview').src = db.logo;
     
+    buildCategoryDropdownAndTable(db.categories);
     buildPortfolioTableRows(db.portfolio);
     buildTeamTableRows(db.team);
     buildReviewsTableRows(db.reviews);
 }
 
+// Category Specific UI Synchronization Dropdowns Framework builder
+function buildCategoryDropdownAndTable(categoriesList) {
+    const dropdown = document.getElementById('p-category');
+    const tbody = document.getElementById('category-table-body');
+    
+    if(dropdown) {
+        dropdown.innerHTML = '';
+        categoriesList.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            dropdown.appendChild(opt);
+        });
+    }
+    
+    if(tbody) {
+        tbody.innerHTML = '';
+        categoriesList.forEach((cat, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><span class="bold-title">${cat}</span></td>
+                <td><button class="admin-btn admin-btn-danger" onclick="deleteCategoryNode('${cat}')">Delete Category</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+}
+
 // Table Grid Dynamic Structural Build Handlers
 function buildPortfolioTableRows(items) {
     const tbody = document.getElementById('portfolio-table-body');
+    if(!tbody) return;
     tbody.innerHTML = '';
     
-    // Render pool collection mapping loop tracking
     items.forEach(item => {
         const tr = document.createElement('tr');
-        
-        // Define clean custom UI badge tracking for covers
         const displayTypeTag = item.isCover 
             ? `<span class="badge" style="background:rgba(16,185,129,0.15); color:#34d399; padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:600;">★ Main Face Cover</span>` 
             : `<span class="badge" style="background:rgba(255,255,255,0.05); color:#94a3b8; padding:4px 8px; border-radius:4px; font-size:0.75rem;">View All Asset</span>`;
 
         tr.innerHTML = `
-            <td><img src="${item.image}" class="tbl-img-preview" alt="Asset Asset Preview Item Row Frame"></td>
+            <td><img src="${item.image}" class="tbl-img-preview" alt="Asset Preview"></td>
             <td><span class="bold-title">${item.title}</span><span class="sub-meta">${item.image.substring(0, 45)}...</span></td>
             <td><span class="badge" style="background:rgba(139,92,246,0.15); color:#a78bfa; padding:4px 8px; border-radius:4px; font-size:0.75rem;">${item.category}</span></td>
             <td>${displayTypeTag}</td>
@@ -88,11 +122,12 @@ function buildPortfolioTableRows(items) {
 
 function buildTeamTableRows(items) {
     const tbody = document.getElementById('team-table-body');
+    if(!tbody) return;
     tbody.innerHTML = '';
     items.forEach(item => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><img src="${item.image}" class="tbl-avatar-preview" alt="Operator Account Roster Portrait View Avatar"></td>
+            <td><img src="${item.image}" class="tbl-avatar-preview" alt="Avatar"></td>
             <td><span class="bold-title">${item.name}</span></td>
             <td><span class="sub-meta">${item.role}</span></td>
             <td><button class="admin-btn admin-btn-danger" onclick="deleteRecordNode('team', ${item.id})">Delete</button></td>
@@ -103,11 +138,12 @@ function buildTeamTableRows(items) {
 
 function buildReviewsTableRows(items) {
     const tbody = document.getElementById('reviews-table-body');
+    if(!tbody) return;
     tbody.innerHTML = '';
     items.forEach(item => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><img src="${item.clientImage}" class="tbl-avatar-preview" alt="Verification Client Avatar Node Tracking Graphic"></td>
+            <td><img src="${item.clientImage}" class="tbl-avatar-preview" alt="Client Avatar"></td>
             <td><span class="sub-meta" style="display:block; max-width:400px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">"${item.text}"</span></td>
             <td><span style="color:#f59e0b; font-weight:600;">${'★'.repeat(item.rating)}</span></td>
             <td><button class="admin-btn admin-btn-danger" onclick="deleteRecordNode('reviews', ${item.id})">Delete</button></td>
@@ -123,6 +159,23 @@ function commitLogoUpdate(e) {
     mutateDatabase(db => { db.logo = path; });
 }
 
+function appendCategoryNode(e) {
+    e.preventDefault();
+    const catName = document.getElementById('c-name').value.trim();
+    if(!catName) return;
+    
+    mutateDatabase(db => {
+        if(!db.categories) db.categories = [];
+        // Prevent duplicate category additions profiles
+        if(!db.categories.includes(catName)){
+            db.categories.push(catName);
+        } else {
+            alert('Category already exists inside engine database registry.');
+        }
+    });
+    document.getElementById('category-form').reset();
+}
+
 function appendPortfolioItem(e) {
     e.preventDefault();
     const title = document.getElementById('p-title').value;
@@ -131,11 +184,8 @@ function appendPortfolioItem(e) {
     const isCover = document.getElementById('p-is-cover').checked;
     
     mutateDatabase(db => {
-        // Safe check initialization array validation routing
         if(!db.portfolio) db.portfolio = [];
 
-        // CRITICAL SYNC LOGIC: Agar naya thumbnail as a Cover set ho raha hai,
-        // toh is specific category ke baaki saare purane thumbnails ko false (uncheck) kardo
         if (isCover) {
             db.portfolio.forEach(item => {
                 if(item.category === category) {
@@ -144,16 +194,8 @@ function appendPortfolioItem(e) {
             });
         }
 
-        // Push clean complete model mapping array item object structure
-        db.portfolio.push({ 
-            id: Date.now(), 
-            title, 
-            category, 
-            image, 
-            isCover: isCover 
-        });
+        db.portfolio.push({ id: Date.now(), title, category, image, isCover });
     });
-    
     document.getElementById('portfolio-form').reset();
 }
 
@@ -180,6 +222,15 @@ function appendReviewCard(e) {
     });
     document.getElementById('reviews-form').reset();
 }
+
+// Dedicated Category Deletion Window Callback Module
+window.deleteCategoryNode = function(categoryName) {
+    if(confirm(`Are you sure you want to delete "${categoryName}" category? Warning: This will not delete project assets matching this tag but they wont show up on structured grids.`)) {
+        mutateDatabase(db => {
+            db.categories = db.categories.filter(c => c !== categoryName);
+        });
+    }
+};
 
 // Global Scope Node Record Array Extractor Element Mutation Eraser Link Function
 window.deleteRecordNode = function(moduleTarget, idKey) {
@@ -210,7 +261,6 @@ function runSystemBackupRoutine() {
     document.body.appendChild(virtualLinkAnchor);
     virtualLinkAnchor.click();
     
-    // Garbage Clean Collection Lifecycle Execution Routine
     document.body.removeChild(virtualLinkAnchor);
     URL.revokeObjectURL(allocationUrl);
 }
@@ -219,4 +269,4 @@ function runSystemBackupRoutine() {
 function executionSecureExitLog() {
     sessionStorage.removeItem('lunar_admin_auth');
     window.location.reload();
-        }
+}
