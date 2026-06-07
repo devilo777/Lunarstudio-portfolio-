@@ -168,4 +168,4 @@ tr:last-child td { border-bottom: none; }
     .dashboard-header { flex-direction: column; align-items: flex-start; }
     .form-grid { grid-template-columns: 1fr; }
     .form-inline { flex-direction: column; align-items: stretch; }
-}
+             }
