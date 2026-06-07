@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lunar Portal | Admin Content Management Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/adminpanel/admin.css">
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-    
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
@@ -45,6 +44,7 @@
         </header>
 
         <main class="modules-layout">
+            
             <section class="admin-card">
                 <h2>Logo Configuration</h2>
                 <form id="logo-form" class="form-inline">
@@ -60,6 +60,29 @@
             </section>
 
             <section class="admin-card">
+                <h2>Manage Portfolio Categories</h2>
+                <form id="category-form" class="form-inline" style="margin-bottom: 25px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>New Category Name</label>
+                        <input type="text" id="c-name" placeholder="e.g., Concept Art, Valorant, 3D Renders" required>
+                    </div>
+                    <button type="submit" class="admin-btn admin-btn-primary">Add New Category</button>
+                </form>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody id="category-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-card">
                 <h2>Portfolio Records Asset Catalog Grid</h2>
                 <form id="portfolio-form" class="form-grid">
                     <div class="form-group">
@@ -69,11 +92,6 @@
                     <div class="form-group">
                         <label>Deployment Category Badge Designation</label>
                         <select id="p-category" required>
-                            <option value="Gaming">Gaming</option>
-                            <option value="IRL">IRL</option>
-                            <option value="Esports">Esports</option>
-                            <option value="Posters">Posters</option>
-                            <option value="Branding">Branding</option>
                         </select>
                     </div>
                     <div class="form-group" style="grid-column: 1/-1;">
@@ -182,6 +200,6 @@
         </main>
     </div>
 
-    <script src="/adminpanel/admin.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>
