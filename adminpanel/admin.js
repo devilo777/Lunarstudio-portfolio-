@@ -11,15 +11,14 @@ import {
 
 import {
   getStorage,
-  ref as storageRef,
+  ref as fbStorageRef,
   uploadBytes,
-  getDownloadURL,
-  deleteObject
+  getDownloadURL
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
-console.log("ADMIN JS LOADED");
+console.log("ADMIN JS LOADED SUCCESSFULLY");
 
-/* Firebase Config */
+/* Firebase Settings */
 const firebaseConfig = {
   apiKey: "AIzaSyDRQPzKLqaJWPXKELcmXDXNXiEISmM5U6I",
   authDomain: "lunar-studio-portfolios.firebaseapp.com",
@@ -34,7 +33,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const storage = getStorage(app);
 
-/* Startup Initialization */
+/* Session Monitor Initialization */
 document.addEventListener("DOMContentLoaded", () => {
   if (sessionStorage.getItem("lunar_admin_auth") === "true") {
     launchDashboardWorkspace();
@@ -43,14 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-/* Authentication Panel Setup */
+/* Gateway Security Setup */
 function setupAuthenticationGate() {
     const form = document.getElementById("auth-form");
     if (!form) return;
 
     form.addEventListener("submit", (e) => {
         e.preventDefault();
-
         const user = document.getElementById("username").value;
         const pass = document.getElementById("password").value;
 
@@ -65,25 +63,24 @@ function setupAuthenticationGate() {
     });
 }
 
-/* Launch and Bind Workspace Modules */
+/* Dashboard Loader Hook Framework */
 function launchDashboardWorkspace() {
   document.getElementById("auth-gate").style.display = "none";
   document.getElementById("dashboard-workspace").style.display = "block";
 
-  // Form Submit Event Listeners
+  // Binding Component Event Callbacks
   document.getElementById("logout-btn").addEventListener("click", executionSecureExitLog);
   document.getElementById("logo-form").addEventListener("submit", uploadLogo);
   document.getElementById("portfolio-form").addEventListener("submit", uploadPortfolioItem);
   document.getElementById("team-form").addEventListener("submit", uploadTeamMember);
   document.getElementById("reviews-form").addEventListener("submit", uploadReview);
   
-  // Bind category form to handle input submission
   const catForm = document.getElementById("category-form");
   if (catForm) {
       catForm.addEventListener("submit", uploadCategoryItem);
   }
 
-  // Load live application matrix streams
+  // Active Streams Initializers
   loadLogo();
   loadCategories();
   loadPortfolio();
@@ -97,17 +94,17 @@ function executionSecureExitLog() {
   location.reload();
 }
 
-/* Core Multi-Part Media Upload Engine */
+/* Base Upload Logic Component - Solves Conflict Engine Glitch */
 async function uploadImage(file, folder) {
-  const fileName = Date.now() + "_" + file.name;
-  const fileRef = storageRef(storage, `${folder}/${fileName}`);
-  await uploadBytes(fileRef, file);
-  const url = await getDownloadURL(fileRef);
-  return url;
+  const uniqName = Date.now() + "_" + file.name;
+  const targetRef = fbStorageRef(storage, `${folder}/${uniqName}`);
+  await uploadBytes(targetRef, file);
+  const downloadPathUrl = await getDownloadURL(targetRef);
+  return downloadPathUrl;
 }
 
 /* =====================================
-   LOGO MANIPULATION MODULES
+   LOGO COMPONENT MODULES
 ===================================== */
 async function uploadLogo(e) {
     e.preventDefault();
@@ -117,7 +114,12 @@ async function uploadLogo(e) {
     try {
         const imageUrl = await uploadImage(file, "logo");
         await set(ref(db, "logo"), { image: imageUrl });
+        
+        const preview = document.getElementById("admin-logo-preview");
+        if (preview) preview.src = imageUrl;
+
         alert("Logo Updated Successfully");
+        document.getElementById("logo-form").reset();
     } catch (err) {
         console.error(err);
         alert("Logo Upload Failed");
@@ -125,8 +127,7 @@ async function uploadLogo(e) {
 }
 
 function loadLogo() {
-    const logoRef = ref(db, "logo");
-    onValue(logoRef, (snapshot) => {
+    onValue(ref(db, "logo"), (snapshot) => {
         const data = snapshot.val();
         if (!data) return;
         const preview = document.getElementById("admin-logo-preview");
@@ -135,7 +136,7 @@ function loadLogo() {
 }
 
 /* =====================================
-   CATEGORY MANAGEMENT MODULES
+   CATEGORY COMPONENT MODULES
 ===================================== */
 async function uploadCategoryItem(e) {
     e.preventDefault();
@@ -164,12 +165,10 @@ function loadCategories() {
     onValue(ref(db, "categories"), (snapshot) => {
         table.innerHTML = "";
         if (selectDropdown) selectDropdown.innerHTML = "";
-        
         const data = snapshot.val();
         if (!data) return;
 
         Object.entries(data).forEach(([id, item]) => {
-            // Render table row
             table.innerHTML += `
             <tr>
                 <td>${item.name}</td>
@@ -178,7 +177,6 @@ function loadCategories() {
                 </td>
             </tr>`;
             
-            // Populates select element options dynamically inside portfolio card
             if (selectDropdown) {
                 selectDropdown.innerHTML += `<option value="${item.name}">${item.name}</option>`;
             }
@@ -192,7 +190,7 @@ window.deleteCategory = async function(id) {
 };
 
 /* =====================================
-   PORTFOLIO DATA SYNC MODULES
+   PORTFOLIO CATALOG MODULES
 ===================================== */
 async function uploadPortfolioItem(e) {
     e.preventDefault();
@@ -215,7 +213,7 @@ async function uploadPortfolioItem(e) {
         });
 
         document.getElementById("portfolio-form").reset();
-        alert("Portfolio Asset Appended Successfully");
+        alert("Portfolio Asset Deployed");
     } catch (err) {
         console.error(err);
         alert("Portfolio Upload Failed");
@@ -234,7 +232,7 @@ function loadPortfolio() {
         Object.entries(data).forEach(([id, item]) => {
             table.innerHTML += `
             <tr>
-                <td><img src="${item.image}" width="80" style="object-fit:cover;border-radius:4px;"></td>
+                <td><img src="${item.image}" width="80" style="object-fit:cover; border-radius:4px;"></td>
                 <td>${item.title}</td>
                 <td>${item.category}</td>
                 <td>${item.isCover ? "Main Page Cover" : "Standard Card"}</td>
@@ -247,12 +245,12 @@ function loadPortfolio() {
 }
 
 window.deletePortfolio = async function(id) {
-    if (!confirm("Delete Portfolio Asset Record?")) return;
+    if (!confirm("Delete Portfolio Asset?")) return;
     await remove(ref(db, "portfolio/" + id));
 };
 
 /* =====================================
-   TEAM MATRIX OPERATION MODULES
+   TEAM MANAGEMENT MODULES
 ===================================== */
 async function uploadTeamMember(e) {
     e.preventDefault();
@@ -292,7 +290,7 @@ function loadTeam() {
         Object.entries(data).forEach(([id, item]) => {
             table.innerHTML += `
             <tr>
-                <td><img src="${item.image}" width="70" style="border-radius:50%;object-fit:cover;"></td>
+                <td><img src="${item.image}" width="70" style="border-radius:50%; object-fit:cover;"></td>
                 <td>${item.name}</td>
                 <td>${item.role}</td>
                 <td>
@@ -309,7 +307,7 @@ window.deleteTeam = async function(id) {
 };
 
 /* =====================================
-   REVIEW DATA PROCESSING MODULES
+   REVIEWS GRID MODULES
 ===================================== */
 async function uploadReview(e) {
     e.preventDefault();
@@ -330,7 +328,7 @@ async function uploadReview(e) {
         });
 
         document.getElementById("reviews-form").reset();
-        alert("Review Published Successfully");
+        alert("Review Published");
     } catch (err) {
         console.error(err);
         alert("Review Upload Failed");
@@ -349,7 +347,7 @@ function loadReviews() {
         Object.entries(data).forEach(([id, item]) => {
             table.innerHTML += `
             <tr>
-                <td><img src="${item.image}" width="70" style="border-radius:50%;object-fit:cover;"></td>
+                <td><img src="${item.image}" width="70" style="border-radius:50%; object-fit:cover;"></td>
                 <td>${item.text}</td>
                 <td>${item.rating} Stars Matrix</td>
                 <td>
@@ -366,7 +364,7 @@ window.deleteReview = async function(id) {
 };
 
 /* =====================================
-   SYSTEM EXPORT/BACKUP ARRAY SCHEMAS
+   BACKUP RECOVERY EXPORT COMPONENT
 ===================================== */
 function enableBackupSystem() {
     const backupBtn = document.getElementById("backup-btn");
@@ -393,8 +391,7 @@ function enableBackupSystem() {
             link.click();
         } catch (err) {
             console.error(err);
-            alert("Backup Serialization Engine Failed");
+            alert("Backup Processing Failed");
         }
     });
 }
-
