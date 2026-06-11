@@ -25,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // ⚠️ APNI IMGBB API KEY YAHAN Niche " " KE ANDAR PASTE KAREIN
-const IMGBB_API_KEY = a5e316ac0e33850083fd66b16c34039b""; 
+const IMGBB_API_KEY = "a5e316ac0e33850083fd66b16c34039b"; 
 
 /* Session Monitor Initialization */
 document.addEventListener("DOMContentLoaded", () => {
