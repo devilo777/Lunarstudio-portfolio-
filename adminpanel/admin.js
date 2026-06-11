@@ -125,6 +125,7 @@ function launchDashboardWorkspace() {
   loadPortfolio();
   loadTeam();
   loadReviews();
+  enableBackupSystem();
 }
 
 function executionSecureExitLog() {
@@ -133,7 +134,7 @@ function executionSecureExitLog() {
   );
 
   location.reload();
-  enableBackupSystem();
+  
 }
 
 async function uploadImage(file, folder) {
