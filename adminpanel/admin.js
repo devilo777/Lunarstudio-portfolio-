@@ -17,6 +17,8 @@ import {
   deleteObject
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
+console.log("ADMIN JS LOADED");
+alert("ADMIN JS LOADED");
 /* Firebase Config */
 
 const firebaseConfig = {
