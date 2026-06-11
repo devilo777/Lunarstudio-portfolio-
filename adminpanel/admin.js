@@ -51,32 +51,47 @@ document.addEventListener("DOMContentLoaded", () => {
 /* Login */
 
 function setupAuthenticationGate() {
-  const form = document.getElementById("auth-form");
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+    alert("STEP 1");
 
-    const user =
-      document.getElementById("username").value;
+    const form = document.getElementById("auth-form");
 
-    const pass =
-      document.getElementById("password").value;
+    form.addEventListener("submit", (e) => {
 
-    if (user === "D3VIL_" && pass === "D3VIL_") {
-      sessionStorage.setItem(
-        "lunar_admin_auth",
-        "true"
-      );
+        alert("STEP 2");
 
-      launchDashboardWorkspace();
-    } else {
-      document.getElementById(
-        "login-error"
-      ).style.display = "block";
+        e.preventDefault();
 
-      form.reset();
-    }
-  });
+        const user =
+            document.getElementById("username").value;
+
+        const pass =
+            document.getElementById("password").value;
+
+        alert(
+            "USER = " + user +
+            "\nPASS = " + pass
+        );
+
+        if (user === "D3VIL_" && pass === "D3VIL_") {
+
+            alert("LOGIN SUCCESS");
+
+            sessionStorage.setItem(
+                "lunar_admin_auth",
+                "true"
+            );
+
+            launchDashboardWorkspace();
+
+        } else {
+
+            alert("LOGIN FAILED");
+
+        }
+
+    });
+
 }
 
 function launchDashboardWorkspace() {
