@@ -9,14 +9,7 @@ import {
   onValue
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
-import {
-  getStorage,
-  ref as fbStorageRef,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
-
-console.log("ADMIN JS LOADED SUCCESSFULLY");
+console.log("ADMIN JS LOADED SUCCESSFULLY (FREE IMGBB EDITION)");
 
 /* Firebase Settings */
 const firebaseConfig = {
@@ -24,14 +17,15 @@ const firebaseConfig = {
   authDomain: "lunar-studio-portfolios.firebaseapp.com",
   databaseURL: "https://lunar-studio-portfolios-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "lunar-studio-portfolios",
-  storageBucket: "lunar-studio-portfolios.firebasestorage.app",
   messagingSenderId: "511025066012",
   appId: "1:511025066012:web:6fc28700f3199f4b352fd9"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const storage = getStorage(app);
+
+// ⚠️ APNI IMGBB API KEY YAHAN Niche " " KE ANDAR PASTE KAREIN
+const IMGBB_API_KEY = a5e316ac0e33850083fd66b16c34039b""; 
 
 /* Session Monitor Initialization */
 document.addEventListener("DOMContentLoaded", () => {
@@ -94,13 +88,35 @@ function executionSecureExitLog() {
   location.reload();
 }
 
-/* Base Upload Logic Component - Solves Conflict Engine Glitch */
-async function uploadImage(file, folder) {
-  const uniqName = Date.now() + "_" + file.name;
-  const targetRef = fbStorageRef(storage, `${folder}/${uniqName}`);
-  await uploadBytes(targetRef, file);
-  const downloadPathUrl = await getDownloadURL(targetRef);
-  return downloadPathUrl;
+/* 100% Free Image Upload Logic Using Imgbb API */
+async function uploadImage(file) {
+  if (IMGBB_API_KEY === "YAHAN_APNI_IMGBB_API_KEY_DALO" || !IMGBB_API_KEY) {
+    alert("Bhai, pehle admin.js me line number 22 par apni Imgbb API Key dalo!");
+    throw new Error("Missing Imgbb API Key");
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Yeh hume direct image ka URL nikal kar dega
+      return result.data.url; 
+    } else {
+      throw new Error(result.error.message || "Upload failed");
+    }
+  } catch (error) {
+    console.error("Imgbb Upload Error:", error);
+    alert("Image upload fail ho gaya! Console check karein.");
+    throw error;
+  }
 }
 
 /* =====================================
@@ -112,17 +128,16 @@ async function uploadLogo(e) {
     if (!file) return;
 
     try {
-        const imageUrl = await uploadImage(file, "logo");
+        const imageUrl = await uploadImage(file);
         await set(ref(db, "logo"), { image: imageUrl });
         
         const preview = document.getElementById("admin-logo-preview");
         if (preview) preview.src = imageUrl;
 
-        alert("Logo Updated Successfully");
+        alert("Logo Updated Successfully (via Imgbb)");
         document.getElementById("logo-form").reset();
     } catch (err) {
         console.error(err);
-        alert("Logo Upload Failed");
     }
 }
 
@@ -201,7 +216,7 @@ async function uploadPortfolioItem(e) {
     if (!file) return;
 
     try {
-        const imageUrl = await uploadImage(file, "portfolio");
+        const imageUrl = await uploadImage(file);
         const portfolioRef = push(ref(db, "portfolio"));
 
         await set(portfolioRef, {
@@ -213,10 +228,9 @@ async function uploadPortfolioItem(e) {
         });
 
         document.getElementById("portfolio-form").reset();
-        alert("Portfolio Asset Deployed");
+        alert("Portfolio Asset Deployed Successfully");
     } catch (err) {
         console.error(err);
-        alert("Portfolio Upload Failed");
     }
 }
 
@@ -260,7 +274,7 @@ async function uploadTeamMember(e) {
     if (!file) return;
 
     try {
-        const imageUrl = await uploadImage(file, "team");
+        const imageUrl = await uploadImage(file);
         const teamRef = push(ref(db, "team"));
 
         await set(teamRef, {
@@ -274,7 +288,6 @@ async function uploadTeamMember(e) {
         alert("Team Member Added");
     } catch (err) {
         console.error(err);
-        alert("Team Upload Failed");
     }
 }
 
@@ -317,7 +330,7 @@ async function uploadReview(e) {
     if (!file) return;
 
     try {
-        const imageUrl = await uploadImage(file, "reviews");
+        const imageUrl = await uploadImage(file);
         const reviewRef = push(ref(db, "reviews"));
 
         await set(reviewRef, {
@@ -331,7 +344,6 @@ async function uploadReview(e) {
         alert("Review Published");
     } catch (err) {
         console.error(err);
-        alert("Review Upload Failed");
     }
 }
 
