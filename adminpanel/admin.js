@@ -18,14 +18,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
 console.log("ADMIN JS LOADED");
-alert("ADMIN JS LOADED");
-/* Firebase Config */
 
+/* Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyDRQPzKLqaJWPXKELcmXDXNXiEISmM5U6I",
   authDomain: "lunar-studio-portfolios.firebaseapp.com",
-  databaseURL:
-    "https://lunar-studio-portfolios-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "https://lunar-studio-portfolios-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "lunar-studio-portfolios",
   storageBucket: "lunar-studio-portfolios.firebasestorage.app",
   messagingSenderId: "511025066012",
@@ -33,13 +31,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getDatabase(app);
-
 const storage = getStorage(app);
 
-/* Startup */
-
+/* Startup Initialization */
 document.addEventListener("DOMContentLoaded", () => {
   if (sessionStorage.getItem("lunar_admin_auth") === "true") {
     launchDashboardWorkspace();
@@ -48,102 +43,49 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-/* Login */
-
+/* Authentication Panel Setup */
 function setupAuthenticationGate() {
-
-    alert("STEP 1");
-
     const form = document.getElementById("auth-form");
+    if (!form) return;
 
     form.addEventListener("submit", (e) => {
-
-        alert("STEP 2");
-
         e.preventDefault();
 
-        const user =
-            document.getElementById("username").value;
-
-        const pass =
-            document.getElementById("password").value;
-
-        alert(
-            "USER = " + user +
-            "\nPASS = " + pass
-        );
+        const user = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
 
         if (user === "D3VIL_" && pass === "D3VIL_") {
-
-  alert("LOGIN SUCCESS");
-
-  sessionStorage.setItem(
-    "lunar_admin_auth",
-    "true"
-  );
-
-  launchDashboardWorkspace();
-
-} else {
-
-  alert("LOGIN FAILED");
-
-  document.getElementById(
-    "login-error"
-  ).style.display = "block";
-
+            alert("LOGIN SUCCESS");
+            sessionStorage.setItem("lunar_admin_auth", "true");
+            launchDashboardWorkspace();
+        } else {
+            alert("LOGIN FAILED");
+            document.getElementById("login-error").style.display = "block";
         }
-
-          
     });
-
 }
 
+/* Launch and Bind Workspace Modules */
 function launchDashboardWorkspace() {
-  document.getElementById(
-    "auth-gate"
-  ).style.display = "none";
+  document.getElementById("auth-gate").style.display = "none";
+  document.getElementById("dashboard-workspace").style.display = "block";
 
-  document.getElementById(
-    "dashboard-workspace"
-  ).style.display = "block";
+  // Form Submit Event Listeners
+  document.getElementById("logout-btn").addEventListener("click", executionSecureExitLog);
+  document.getElementById("logo-form").addEventListener("submit", uploadLogo);
+  document.getElementById("portfolio-form").addEventListener("submit", uploadPortfolioItem);
+  document.getElementById("team-form").addEventListener("submit", uploadTeamMember);
+  document.getElementById("reviews-form").addEventListener("submit", uploadReview);
+  
+  // Bind category form to handle input submission
+  const catForm = document.getElementById("category-form");
+  if (catForm) {
+      catForm.addEventListener("submit", uploadCategoryItem);
+  }
 
-  document
-    .getElementById("logout-btn")
-    .addEventListener(
-      "click",
-      executionSecureExitLog
-    );
-
-  document
-    .getElementById("logo-form")
-    .addEventListener(
-      "submit",
-      uploadLogo
-    );
-
-  document
-    .getElementById("portfolio-form")
-    .addEventListener(
-      "submit",
-      uploadPortfolioItem
-    );
-
-  document
-    .getElementById("team-form")
-    .addEventListener(
-      "submit",
-      uploadTeamMember
-    );
-
-  document
-    .getElementById("reviews-form")
-    .addEventListener(
-      "submit",
-      uploadReview
-    );
-
+  // Load live application matrix streams
   loadLogo();
+  loadCategories();
   loadPortfolio();
   loadTeam();
   loadReviews();
@@ -151,650 +93,308 @@ function launchDashboardWorkspace() {
 }
 
 function executionSecureExitLog() {
-  sessionStorage.removeItem(
-    "lunar_admin_auth"
-  );
-
+  sessionStorage.removeItem("lunar_admin_auth");
   location.reload();
-  
 }
 
+/* Core Multi-Part Media Upload Engine */
 async function uploadImage(file, folder) {
-
-  const fileName =
-    Date.now() + "_" + file.name;
-
-  const fileRef = storageRef(
-    storage,
-    `${folder}/${fileName}`
-  );
-
-  await uploadBytes(
-    fileRef,
-    file
-  );
-
-  const url =
-    await getDownloadURL(fileRef);
-
+  const fileName = Date.now() + "_" + file.name;
+  const fileRef = storageRef(storage, `${folder}/${fileName}`);
+  await uploadBytes(fileRef, file);
+  const url = await getDownloadURL(fileRef);
   return url;
 }
 
 /* =====================================
-   LOGO UPLOAD
+   LOGO MANIPULATION MODULES
 ===================================== */
-
 async function uploadLogo(e) {
-
     e.preventDefault();
-
-    const file =
-        document.getElementById("logo-path")
-        .files[0];
-
+    const file = document.getElementById("logo-path").files[0];
     if (!file) return;
 
     try {
-
-        const imageUrl =
-            await uploadImage(
-                file,
-                "logo"
-            );
-
-        await set(
-            ref(db, "logo"),
-            {
-                image: imageUrl
-            }
-        );
-
-        alert(
-            "Logo Updated Successfully"
-        );
-
+        const imageUrl = await uploadImage(file, "logo");
+        await set(ref(db, "logo"), { image: imageUrl });
+        alert("Logo Updated Successfully");
     } catch (err) {
-
         console.error(err);
-
-        alert(
-            "Logo Upload Failed"
-        );
-
+        alert("Logo Upload Failed");
     }
-
 }
 
 function loadLogo() {
-
-    const logoRef =
-        ref(db, "logo");
-
-    onValue(
-        logoRef,
-        (snapshot) => {
-
-            const data =
-                snapshot.val();
-
-            if (!data) return;
-
-            const preview =
-                document.getElementById(
-                    "admin-logo-preview"
-                );
-
-            preview.src =
-                data.image;
-
-        }
-    );
-
+    const logoRef = ref(db, "logo");
+    onValue(logoRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
+        const preview = document.getElementById("admin-logo-preview");
+        if (preview) preview.src = data.image;
+    });
 }
 
 /* =====================================
-   PORTFOLIO UPLOAD
+   CATEGORY MANAGEMENT MODULES
 ===================================== */
+async function uploadCategoryItem(e) {
+    e.preventDefault();
+    const nameField = document.getElementById("c-name");
+    if (!nameField || !nameField.value.trim()) return;
 
+    try {
+        const catRef = push(ref(db, "categories"));
+        await set(catRef, {
+            id: catRef.key,
+            name: nameField.value.trim()
+        });
+        document.getElementById("category-form").reset();
+        alert("Category Added Successfully");
+    } catch (err) {
+        console.error(err);
+        alert("Category Addition Failed");
+    }
+}
+
+function loadCategories() {
+    const table = document.getElementById("category-table-body");
+    const selectDropdown = document.getElementById("p-category");
+    if (!table) return;
+
+    onValue(ref(db, "categories"), (snapshot) => {
+        table.innerHTML = "";
+        if (selectDropdown) selectDropdown.innerHTML = "";
+        
+        const data = snapshot.val();
+        if (!data) return;
+
+        Object.entries(data).forEach(([id, item]) => {
+            // Render table row
+            table.innerHTML += `
+            <tr>
+                <td>${item.name}</td>
+                <td>
+                    <button onclick="deleteCategory('${id}')" class="admin-btn admin-btn-danger">Delete</button>
+                </td>
+            </tr>`;
+            
+            // Populates select element options dynamically inside portfolio card
+            if (selectDropdown) {
+                selectDropdown.innerHTML += `<option value="${item.name}">${item.name}</option>`;
+            }
+        });
+    });
+}
+
+window.deleteCategory = async function(id) {
+    if (!confirm("Delete Category?")) return;
+    await remove(ref(db, "categories/" + id));
+};
+
+/* =====================================
+   PORTFOLIO DATA SYNC MODULES
+===================================== */
 async function uploadPortfolioItem(e) {
-
     e.preventDefault();
-
-    const title =
-        document.getElementById(
-            "p-title"
-        ).value;
-
-    const category =
-        document.getElementById(
-            "p-category"
-        ).value;
-
-    const file =
-        document.getElementById(
-            "p-image"
-        ).files[0];
-
+    const title = document.getElementById("p-title").value;
+    const category = document.getElementById("p-category").value;
+    const isCover = document.getElementById("p-is-cover").checked;
+    const file = document.getElementById("p-image").files[0];
     if (!file) return;
 
     try {
+        const imageUrl = await uploadImage(file, "portfolio");
+        const portfolioRef = push(ref(db, "portfolio"));
 
-        const imageUrl =
-            await uploadImage(
-                file,
-                "portfolio"
-            );
+        await set(portfolioRef, {
+            id: portfolioRef.key,
+            title,
+            category,
+            isCover,
+            image: imageUrl
+        });
 
-        const portfolioRef =
-            push(
-                ref(
-                    db,
-                    "portfolio"
-                )
-            );
-
-        await set(
-            portfolioRef,
-            {
-                id:
-                    portfolioRef.key,
-                title,
-                category,
-                image:
-                    imageUrl
-            }
-        );
-
-        document
-            .getElementById(
-                "portfolio-form"
-            )
-            .reset();
-
-        alert(
-            "Portfolio Added"
-        );
-
+        document.getElementById("portfolio-form").reset();
+        alert("Portfolio Asset Appended Successfully");
     } catch (err) {
-
         console.error(err);
-
-        alert(
-            "Portfolio Upload Failed"
-        );
-
+        alert("Portfolio Upload Failed");
     }
-
 }
 
-/* =====================================
-   TEAM MEMBER UPLOAD
-===================================== */
-
-async function uploadTeamMember(e) {
-
-    e.preventDefault();
-
-    const name =
-        document.getElementById(
-            "t-name"
-        ).value;
-
-    const role =
-        document.getElementById(
-            "t-role"
-        ).value;
-
-    const file =
-        document.getElementById(
-            "t-image"
-        ).files[0];
-
-    if (!file) return;
-
-    try {
-
-        const imageUrl =
-            await uploadImage(
-                file,
-                "team"
-            );
-
-        const teamRef =
-            push(
-                ref(
-                    db,
-                    "team"
-                )
-            );
-
-        await set(
-            teamRef,
-            {
-                id:
-                    teamRef.key,
-                name,
-                role,
-                image:
-                    imageUrl
-            }
-        );
-
-        document
-            .getElementById(
-                "team-form"
-            )
-            .reset();
-
-        alert(
-            "Team Member Added"
-        );
-
-    } catch (err) {
-
-        console.error(err);
-
-        alert(
-            "Team Upload Failed"
-        );
-
-    }
-
-}
-
-/* =====================================
-   REVIEW UPLOAD
-===================================== */
-
-async function uploadReview(e) {
-
-    e.preventDefault();
-
-    const rating =
-        document.getElementById(
-            "r-rating"
-        ).value;
-
-    const text =
-        document.getElementById(
-            "r-text"
-        ).value;
-
-    const file =
-        document.getElementById(
-            "r-image"
-        ).files[0];
-
-    if (!file) return;
-
-    try {
-
-        const imageUrl =
-            await uploadImage(
-                file,
-                "reviews"
-            );
-
-        const reviewRef =
-            push(
-                ref(
-                    db,
-                    "reviews"
-                )
-            );
-
-        await set(
-            reviewRef,
-            {
-                id:
-                    reviewRef.key,
-                image:
-                    imageUrl,
-                rating,
-                text
-            }
-        );
-
-        document
-            .getElementById(
-                "reviews-form"
-            )
-            .reset();
-
-        alert(
-            "Review Published"
-        );
-
-    } catch (err) {
-
-        console.error(err);
-
-        alert(
-            "Review Upload Failed"
-        );
-
-    }
-
-}
 function loadPortfolio() {
+    const table = document.getElementById("portfolio-table-body");
+    if (!table) return;
 
-    const table =
-        document.getElementById(
-            "portfolio-table-body"
-        );
+    onValue(ref(db, "portfolio"), (snapshot) => {
+        table.innerHTML = "";
+        const data = snapshot.val();
+        if (!data) return;
 
-    onValue(
-        ref(db, "portfolio"),
-        (snapshot) => {
+        Object.entries(data).forEach(([id, item]) => {
+            table.innerHTML += `
+            <tr>
+                <td><img src="${item.image}" width="80" style="object-fit:cover;border-radius:4px;"></td>
+                <td>${item.title}</td>
+                <td>${item.category}</td>
+                <td>${item.isCover ? "Main Page Cover" : "Standard Card"}</td>
+                <td>
+                    <button onclick="deletePortfolio('${id}')" class="admin-btn admin-btn-danger">Delete</button>
+                </td>
+            </tr>`;
+        });
+    });
+}
 
-            table.innerHTML = "";
+window.deletePortfolio = async function(id) {
+    if (!confirm("Delete Portfolio Asset Record?")) return;
+    await remove(ref(db, "portfolio/" + id));
+};
 
-            const data =
-                snapshot.val();
+/* =====================================
+   TEAM MATRIX OPERATION MODULES
+===================================== */
+async function uploadTeamMember(e) {
+    e.preventDefault();
+    const name = document.getElementById("t-name").value;
+    const role = document.getElementById("t-role").value;
+    const file = document.getElementById("t-image").files[0];
+    if (!file) return;
 
-            if (!data) return;
+    try {
+        const imageUrl = await uploadImage(file, "team");
+        const teamRef = push(ref(db, "team"));
 
-            Object.entries(data)
-            .forEach(([id,item]) => {
+        await set(teamRef, {
+            id: teamRef.key,
+            name,
+            role,
+            image: imageUrl
+        });
 
-                table.innerHTML += `
-                <tr>
-                    <td>
-                        <img
-                        src="${item.image}"
-                        width="80">
-                    </td>
-
-                    <td>
-                        ${item.title}
-                    </td>
-
-                    <td>
-                        ${item.category}
-                    </td>
-
-                    <td>
-                        <button
-                        onclick="deletePortfolio('${id}')"
-                        class="admin-btn admin-btn-danger">
-                        Delete
-                        </button>
-                    </td>
-                </tr>
-                `;
-
-            });
-
-        }
-    );
-
+        document.getElementById("team-form").reset();
+        alert("Team Member Added");
+    } catch (err) {
+        console.error(err);
+        alert("Team Upload Failed");
+    }
 }
 
 function loadTeam() {
+    const table = document.getElementById("team-table-body");
+    if (!table) return;
 
-    const table =
-        document.getElementById(
-            "team-table-body"
-        );
+    onValue(ref(db, "team"), (snapshot) => {
+        table.innerHTML = "";
+        const data = snapshot.val();
+        if (!data) return;
 
-    onValue(
-        ref(db, "team"),
-        (snapshot) => {
+        Object.entries(data).forEach(([id, item]) => {
+            table.innerHTML += `
+            <tr>
+                <td><img src="${item.image}" width="70" style="border-radius:50%;object-fit:cover;"></td>
+                <td>${item.name}</td>
+                <td>${item.role}</td>
+                <td>
+                    <button onclick="deleteTeam('${id}')" class="admin-btn admin-btn-danger">Delete</button>
+                </td>
+            </tr>`;
+        });
+    });
+}
 
-            table.innerHTML = "";
+window.deleteTeam = async function(id) {
+    if (!confirm("Delete Team Member?")) return;
+    await remove(ref(db, "team/" + id));
+};
 
-            const data =
-                snapshot.val();
+/* =====================================
+   REVIEW DATA PROCESSING MODULES
+===================================== */
+async function uploadReview(e) {
+    e.preventDefault();
+    const rating = document.getElementById("r-rating").value;
+    const text = document.getElementById("r-text").value;
+    const file = document.getElementById("r-image").files[0];
+    if (!file) return;
 
-            if (!data) return;
+    try {
+        const imageUrl = await uploadImage(file, "reviews");
+        const reviewRef = push(ref(db, "reviews"));
 
-            Object.entries(data)
-            .forEach(([id,item]) => {
+        await set(reviewRef, {
+            id: reviewRef.key,
+            image: imageUrl,
+            rating,
+            text
+        });
 
-                table.innerHTML += `
-                <tr>
-
-                    <td>
-                        <img
-                        src="${item.image}"
-                        width="70">
-                    </td>
-
-                    <td>
-                        ${item.name}
-                    </td>
-
-                    <td>
-                        ${item.role}
-                    </td>
-
-                    <td>
-
-                        <button
-                        onclick="deleteTeam('${id}')"
-                        class="admin-btn admin-btn-danger">
-
-                        Delete
-
-                        </button>
-
-                    </td>
-
-                </tr>
-                `;
-
-            });
-
-        }
-    );
-
+        document.getElementById("reviews-form").reset();
+        alert("Review Published Successfully");
+    } catch (err) {
+        console.error(err);
+        alert("Review Upload Failed");
+    }
 }
 
 function loadReviews() {
+    const table = document.getElementById("reviews-table-body");
+    if (!table) return;
 
-    const table =
-        document.getElementById(
-            "reviews-table-body"
-        );
+    onValue(ref(db, "reviews"), (snapshot) => {
+        table.innerHTML = "";
+        const data = snapshot.val();
+        if (!data) return;
 
-    onValue(
-        ref(db, "reviews"),
-        (snapshot) => {
-
-            table.innerHTML = "";
-
-            const data =
-                snapshot.val();
-
-            if (!data) return;
-
-            Object.entries(data)
-            .forEach(([id,item]) => {
-
-                table.innerHTML += `
-                <tr>
-
-                    <td>
-                        <img
-                        src="${item.image}"
-                        width="70">
-                    </td>
-
-                    <td>
-                        ${item.text}
-                    </td>
-
-                    <td>
-                        ${item.rating}
-                    </td>
-
-                    <td>
-
-                        <button
-                        onclick="deleteReview('${id}')"
-                        class="admin-btn admin-btn-danger">
-
-                        Delete
-
-                        </button>
-
-                    </td>
-
-                </tr>
-                `;
-
-            });
-
-        }
-    );
-
+        Object.entries(data).forEach(([id, item]) => {
+            table.innerHTML += `
+            <tr>
+                <td><img src="${item.image}" width="70" style="border-radius:50%;object-fit:cover;"></td>
+                <td>${item.text}</td>
+                <td>${item.rating} Stars Matrix</td>
+                <td>
+                    <button onclick="deleteReview('${id}')" class="admin-btn admin-btn-danger">Delete</button>
+                </td>
+            </tr>`;
+        });
+    });
 }
 
-window.deletePortfolio =
-async function(id) {
-
-    if(
-        !confirm(
-            "Delete Portfolio?"
-        )
-    ) return;
-
-    await remove(
-        ref(
-            db,
-            "portfolio/" + id
-        )
-    );
-
+window.deleteReview = async function(id) {
+    if (!confirm("Delete Review Data Node?")) return;
+    await remove(ref(db, "reviews/" + id));
 };
 
-window.deleteTeam =
-async function(id) {
-
-    if(
-        !confirm(
-            "Delete Team Member?"
-        )
-    ) return;
-
-    await remove(
-        ref(
-            db,
-            "team/" + id
-        )
-    );
-
-};
-
-window.deleteReview =
-async function(id) {
-
-    if(
-        !confirm(
-            "Delete Review?"
-        )
-    ) return;
-
-    await remove(
-        ref(
-            db,
-            "reviews/" + id
-        )
-    );
-
-};
-
+/* =====================================
+   SYSTEM EXPORT/BACKUP ARRAY SCHEMAS
+===================================== */
 function enableBackupSystem() {
+    const backupBtn = document.getElementById("backup-btn");
+    if (!backupBtn) return;
 
-    const backupBtn =
-        document.getElementById(
-            "backup-btn"
-        );
+    backupBtn.addEventListener("click", async () => {
+        try {
+            const backupData = {};
+            const sections = ["logo", "categories", "portfolio", "team", "reviews"];
 
-    backupBtn.addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                const backupData = {};
-
-                const sections = [
-                    "logo",
-                    "portfolio",
-                    "team",
-                    "reviews"
-                ];
-
-                for (const section of sections) {
-
-                    await new Promise(
-                        resolve => {
-
-                            onValue(
-                                ref(db, section),
-                                snapshot => {
-
-                                    backupData[
-                                        section
-                                    ] =
-                                    snapshot.val();
-
-                                    resolve();
-
-                                },
-                                {
-                                    onlyOnce:true
-                                }
-                            );
-
-                        }
-                    );
-
-                }
-
-                const blob =
-                    new Blob(
-                        [
-                            JSON.stringify(
-                                backupData,
-                                null,
-                                2
-                            )
-                        ],
-                        {
-                            type:
-                            "application/json"
-                        }
-                    );
-
-                const link =
-                    document.createElement(
-                        "a"
-                    );
-
-                link.href =
-                    URL.createObjectURL(
-                        blob
-                    );
-
-                link.download =
-                    "lunar-backup.json";
-
-                link.click();
-
-            }
-            catch(err){
-
-                console.error(err);
-
-                alert(
-                    "Backup Failed"
-                );
-
+            for (const section of sections) {
+                await new Promise(resolve => {
+                    onValue(ref(db, section), snapshot => {
+                        backupData[section] = snapshot.val();
+                        resolve();
+                    }, { onlyOnce: true });
+                });
             }
 
+            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "lunar-backup.json";
+            link.click();
+        } catch (err) {
+            console.error(err);
+            alert("Backup Serialization Engine Failed");
         }
-    );
-
+    });
 }
+
