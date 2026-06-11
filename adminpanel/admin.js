@@ -133,6 +133,7 @@ function executionSecureExitLog() {
   );
 
   location.reload();
+  enableBackupSystem();
 }
 
 async function uploadImage(file, folder) {
