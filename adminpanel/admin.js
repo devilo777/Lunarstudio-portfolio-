@@ -75,21 +75,26 @@ function setupAuthenticationGate() {
 
         if (user === "D3VIL_" && pass === "D3VIL_") {
 
-            alert("LOGIN SUCCESS");
+  alert("LOGIN SUCCESS");
 
-            sessionStorage.setItem(
-                "lunar_admin_auth",
-                "true"
-            );
+  sessionStorage.setItem(
+    "lunar_admin_auth",
+    "true"
+  );
 
-            launchDashboardWorkspace();
+  launchDashboardWorkspace();
 
-        } else {
+} else {
 
-            alert("LOGIN FAILED");
+  alert("LOGIN FAILED");
+
+  document.getElementById(
+    "login-error"
+  ).style.display = "block";
 
         }
 
+          
     });
 
 }
