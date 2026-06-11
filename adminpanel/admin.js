@@ -178,24 +178,23 @@ function appendCategoryNode(e) {
 
 function appendPortfolioItem(e) {
     e.preventDefault();
+
     const title = document.getElementById('p-title').value;
     const category = document.getElementById('p-category').value;
-    const image = document.getElementById('p-image').value;
-    const isCover = document.getElementById('p-is-cover').checked;
-    
+
+    const fileName = document.getElementById('p-image').value.trim();
+
+    const image = `assets/portfolio/${fileName}`;
+
     mutateDatabase(db => {
-        if(!db.portfolio) db.portfolio = [];
-
-        if (isCover) {
-            db.portfolio.forEach(item => {
-                if(item.category === category) {
-                    item.isCover = false;
-                }
-            });
-        }
-
-        db.portfolio.push({ id: Date.now(), title, category, image, isCover });
+        db.portfolio.push({
+            id: Date.now(),
+            title,
+            category,
+            image
+        });
     });
+
     document.getElementById('portfolio-form').reset();
 }
 
